@@ -7,13 +7,14 @@ screen.register_shape("car.gif")
 car.shape("car.gif")
 car.color("red")
 car.resizemode("user")
-car.shapesize(0.1, 0.1)
+car.shapesize(0.00005, 0.00005)
 bg.left(90)
 screen.register_shape("road.gif")
 bg.shape("road.gif")
 player.left(90)
 screen.addshape("chicken.gif")
 player.shape("chicken.gif")
+player.shapesize(0.05, 0.05)
 player.speed(0)
 def move_up():
   pos = player.pos()
@@ -51,7 +52,7 @@ class storage:
 lane1 = storage(0, 0)
 lane1.objects.append(car)
 
-timer = 10
+timer = 30
 score = 0
 lives = 3
 
@@ -60,14 +61,16 @@ while True:
     if checkAABBCollision(o, player):
       lives -= 1
   for l in lane1.objects:
-    l.forward(3)
+    l.forward(7)
   timer -= 1
   if timer == 0:
     car = Turtle()
-    car.shape("square")
+    car.shape("car.gif")
     car.color("red")
+    car.resizemode("user")
+    car.shapesize(0.00005, 0.000005)
     car.teleport(lane1.x, lane1.y)
     lane1.objects.append(car)
-    timer = 10
+    timer = 30
   if lives == 0:
    print("Game over")
