@@ -1,4 +1,6 @@
 from turtle import *
+import random
+import sys
 screen = Screen()
 bg = Turtle()
 player = Turtle()
@@ -16,6 +18,7 @@ screen.addshape("chicken.gif")
 player.shape("chicken.gif")
 player.shapesize(0.05, 0.05)
 player.speed(0)
+player.goto(0, -100)
 def move_up():
   pos = player.pos()
   player.goto(pos[0], pos[1]+10)
@@ -56,13 +59,28 @@ timer = 30
 score = 0
 lives = 3
 
+def  reset():
+  player.goto(0, -100)
+  global score
+  score = 0
+  global lives
+  lives = 3
+  global timer
+  timer = 30
+
+line1 = Turtle()
+line2 = Turtle()
+
 while True:
   for o in lane1.objects:
     if checkAABBCollision(o, player):
       lives -= 1
+      print("lives", lives)
   for l in lane1.objects:
     l.forward(7)
   timer -= 1
+  score += 10
+  print(score)
   if timer == 0:
     car = Turtle()
     car.shape("car.gif")
@@ -71,6 +89,12 @@ while True:
     car.shapesize(0.00005, 0.000005)
     car.teleport(lane1.x, lane1.y)
     lane1.objects.append(car)
-    timer = 30
+    time = random.randint(30, 100)
+    timer = time
+    lives -= 1
   if lives == 0:
-   print("Game over")
+   timer = 100000000000000
+   line1.write("Game over")
+   line2.write("Would you like to play again? Press r to start again, press n to end the game.")
+  screen.onkeypress(reset, "r")
+  screen.onkeypress(sys.exit, "n")
