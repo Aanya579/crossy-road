@@ -1,4 +1,5 @@
 from turtle import *
+import turtle
 import random
 import sys
 screen = Screen()
@@ -6,18 +7,21 @@ bg = Turtle()
 player = Turtle()
 car = Turtle()
 car2 = Turtle()
+coin = Turtle()
 screen.register_shape("car.gif")
+screen.register_shape("car2.gif")
 car.shape("car.gif")
 car.color("red")
 car.resizemode("user")
-car2.shapesize(0.00005, 0.00005)
-car2.shape("car.gif")
+car2.shapesize(0.00005, 0.00005, .000005)
+car2.shape("car2.gif")
 car2.color("red")
 car2.resizemode("user")
-car2.shapesize(0.00005, 0.00005)
+car2.shapesize(0.00005, 0.00005, .000005)
 bg.left(90)
 screen.register_shape("road.gif")
 bg.shape("road.gif")
+screen.register_shape("coin.gif")
 player.left(90)
 screen.addshape("chicken.gif")
 player.shape("chicken.gif")
@@ -42,6 +46,14 @@ def move_left():
   global player
   pos = player.pos()
   player.goto(pos[0]-10, pos[1])
+
+def coin():
+  global coin
+  coin = turtle.Turtle()
+  x = random.randint(-200, 200)
+  y = random.randint(-200, 200)
+  screen.addshape("coin.gif")
+  coin.goto(x, y)
   
 screen.onkey(move_left, "Left")
 screen.onkey(move_right, "Right")
@@ -61,8 +73,10 @@ class storage:
     
 lane1 = storage(-300, 150)
 lane1.objects.append(car)
+lane1.objects.append(coin)
 lane2 = storage(200, -50)
 lane2.objects.append(car)
+lane2.objects.append(coin)
 
 timer = 30
 score = 0
@@ -87,7 +101,7 @@ def  reset():
   car.shape("car.gif")
   car.color("red")
   car.resizemode("user")
-  car.shapesize(0.00005, 0.00005)
+  car.shapesize(0.00005, 0.00005, .000005)
   bg = Turtle()
   bg.left(90)
   bg.shape("road.gif")
@@ -95,7 +109,7 @@ def  reset():
   player.left(90)
   screen.addshape("chicken.gif")
   player.shape("chicken.gif")
-  player.shapesize(0.05, 0.05)
+  player.shapesize(2, 2)
   player.speed(0)
   player.goto(0, -100)
   screen.onkey(move_left, "Left")
@@ -118,6 +132,8 @@ def game():
   global lives, timer, has_drawn_text, score, player
   cars = []
   while True:
+    coin_timer = 100
+    #coin()
     for o in lane1.objects:
       if checkAABBCollision(o, player):
         if not o in cars:
@@ -143,19 +159,24 @@ def game():
 
     timer -= 1
     score += 10
+    coin_timer -= 1
+
+    if coin_timer == 0:
+      coin()
+      #coin_timer = 100
 
     if timer == 0:
       car = Turtle()
       car.shape("car.gif")
       car.color("red")
       car.resizemode("user")
-      car.shapesize(0.00005, 0.000005)
+      car.shapesize(0.00005, 0.000005, .000005)
       car.teleport(lane1.x, lane1.y)
       car2 = Turtle()
-      car2.shape("car.gif")
+      car2.shape("car2.gif")
       car2.color("red")
       car2.resizemode("user")
-      car2.shapesize(0.00005, 0.000005)
+      car2.shapesize(0.00005, 0.000005, .000005)
       car2.teleport(lane2.x, lane2.y)
       lane1.objects.append(car)
       lane2.objects.append(car2)
