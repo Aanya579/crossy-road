@@ -1,0 +1,4 @@
+from PIL import Image
+im = Image.open("coin.gif")
+im_resized = im.resize((55, 55), Image.LANCZOS)
+im_resized.save("coin1.gif", "GIF")

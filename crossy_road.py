@@ -13,11 +13,13 @@ screen.register_shape("car2.gif")
 car.shape("car.gif")
 car.color("red")
 car.resizemode("user")
+car.penup()
 car2.shapesize(0.00005, 0.00005, .000005)
 car2.shape("car2.gif")
 car2.color("red")
 car2.resizemode("user")
 car2.shapesize(0.00005, 0.00005, .000005)
+car2.penup()
 bg.left(90)
 screen.register_shape("road.gif")
 bg.shape("road.gif")
@@ -27,32 +29,39 @@ screen.addshape("chicken.gif")
 player.shape("chicken.gif")
 player.shapesize(0.05, 0.05)
 player.speed(0)
-player.goto(0, -100)
+player.penup()
+player.goto(0, -150)
 
 def move_up():
   global player
+  player.penup()
   pos = player.pos()
   print(pos)
   player.goto(pos[0], pos[1]+10)
 def move_down():
   global player
+  player.penup()
   pos = player.pos()
   player.goto(pos[0], pos[1]-10)
 def move_right():
   global player
+  player.penup()
   pos = player.pos()
   player.goto(pos[0]+10, pos[1])
 def move_left():
   global player
+  player.penup()
   pos = player.pos()
   player.goto(pos[0]-10, pos[1])
 
-def coin():
+def coins():
   global coin
   coin = turtle.Turtle()
   x = random.randint(-200, 200)
   y = random.randint(-200, 200)
-  screen.addshape("coin.gif")
+  screen.addshape("coin1.gif")
+  coin.shape("coin1.gif")
+  coin.penup()
   coin.goto(x, y)
   
 screen.onkey(move_left, "Left")
@@ -64,19 +73,22 @@ screen.listen()
 def checkAABBCollision(B, A):
 
   return A.xcor() < B.xcor() + 180 and A.xcor() + 55 > B.xcor() and A.ycor() < B.ycor() + 90 and A.ycor() + 55 > B.ycor()
+
+def checkAABBCollision2(B, A):
+
+  return A.xcor() < B.xcor() + 55 and A.xcor() + 55 > B.xcor() and A.ycor() < B.ycor() + 55 and A.ycor() + 55 > B.ycor()
   
 class storage:
   def __init__(self, x, y):
     self.objects = []
+    self.coins = []
     self.x = x
     self.y = y
     
 lane1 = storage(-300, 150)
 lane1.objects.append(car)
-lane1.objects.append(coin)
 lane2 = storage(200, -50)
 lane2.objects.append(car)
-lane2.objects.append(coin)
 
 timer = 30
 score = 0
@@ -117,6 +129,7 @@ def  reset():
   screen.onkey(move_down, "Down")
   screen.onkey(move_up, "Up")
   screen.listen()
+  coins()
 
 print(screen.screensize())
 
@@ -132,8 +145,6 @@ def game():
   global lives, timer, has_drawn_text, score, player
   cars = []
   while True:
-    coin_timer = 100
-    #coin()
     for o in lane1.objects:
       if checkAABBCollision(o, player):
         if not o in cars:
@@ -156,14 +167,14 @@ def game():
       if l.xcor() < -200:
         l.ht()
         del l
+    if checkAABBCollision2(coin, player):
+      score += 1
+      coin.clear()
+      coin.ht()
+      coins()
+
 
     timer -= 1
-    score += 10
-    coin_timer -= 1
-
-    if coin_timer == 0:
-      coin()
-      #coin_timer = 100
 
     if timer == 0:
       car = Turtle()
@@ -172,12 +183,14 @@ def game():
       car.resizemode("user")
       car.shapesize(0.00005, 0.000005, .000005)
       car.teleport(lane1.x, lane1.y)
+      car.penup()
       car2 = Turtle()
       car2.shape("car2.gif")
       car2.color("red")
       car2.resizemode("user")
       car2.shapesize(0.00005, 0.000005, .000005)
       car2.teleport(lane2.x, lane2.y)
+      car2.penup()
       lane1.objects.append(car)
       lane2.objects.append(car2)
       time = random.randint(30, 100)
@@ -193,12 +206,9 @@ def game():
       line2.goto(-200, -250)
       line1.pendown()
       line2.pendown()
-      line1.write("Game over")
+      line1.write("Game over, your score was " + str(score))
       line2.write("Would you like to play again? Press r to start again, press n to end the game.")
     screen.onkeypress(reset, "r")
     screen.onkeypress(exit, "n")
-
-    if player.ycor() > 240:
-      print("You win!")
 
 game()
