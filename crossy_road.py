@@ -30,29 +30,29 @@ player.shape("chicken.gif")
 player.shapesize(0.05, 0.05)
 player.speed(0)
 player.penup()
-player.goto(0, -150)
+player.goto(0, 40)
 
 def move_up():
   global player
   player.penup()
   pos = player.pos()
   print(pos)
-  player.goto(pos[0], pos[1]+10)
+  player.goto(pos[0], pos[1]+20)
 def move_down():
   global player
   player.penup()
   pos = player.pos()
-  player.goto(pos[0], pos[1]-10)
+  player.goto(pos[0], pos[1]-20)
 def move_right():
   global player
   player.penup()
   pos = player.pos()
-  player.goto(pos[0]+10, pos[1])
+  player.goto(pos[0]+20, pos[1])
 def move_left():
   global player
   player.penup()
   pos = player.pos()
-  player.goto(pos[0]-10, pos[1])
+  player.goto(pos[0]-20, pos[1])
 
 def coins():
   global coin
@@ -77,27 +77,41 @@ def checkAABBCollision(B, A):
 def checkAABBCollision2(B, A):
 
   return A.xcor() < B.xcor() + 55 and A.xcor() + 55 > B.xcor() and A.ycor() < B.ycor() + 55 and A.ycor() + 55 > B.ycor()
+
+timer = 30
+score = 0
+lives = 4
   
 class storage:
+  
   def __init__(self, x, y):
     self.objects = []
     self.coins = []
     self.x = x
     self.y = y
-    
+    self.cars = []
+  def update(self):
+    for o in self.objects:
+        if checkAABBCollision(o, player):
+          if not o in self.cars:
+            self.cars.append(o)
+            global lives
+            lives -= 1
+            print("lives", lives)
+        o.forward(7)
+        if o.xcor() > 200:
+          o.ht()
+          del o
+
 lane1 = storage(-300, 150)
 lane1.objects.append(car)
 lane2 = storage(200, -50)
 lane2.objects.append(car)
 
-timer = 30
-score = 0
-lives = 3
-
 def  reset():
   global player, bg, has_drawn_text
   has_drawn_text = False
-  player.goto(0, -100)
+  player.goto(0, 40)
   global score
   score = 0
   global lives
@@ -123,7 +137,7 @@ def  reset():
   player.shape("chicken.gif")
   player.shapesize(2, 2)
   player.speed(0)
-  player.goto(0, -100)
+  player.goto(0, 40)
   screen.onkey(move_left, "Left")
   screen.onkey(move_right, "Right")
   screen.onkey(move_down, "Down")
@@ -145,28 +159,8 @@ def game():
   global lives, timer, has_drawn_text, score, player
   cars = []
   while True:
-    for o in lane1.objects:
-      if checkAABBCollision(o, player):
-        if not o in cars:
-          cars.append(o)
-          lives -= 1
-          print("lives", lives)
-    for l in lane1.objects:
-      l.forward(7)
-      if l.xcor() > 200:
-        l.ht()
-        del l
-    for o in lane2.objects:
-      if checkAABBCollision(o, player):
-        if not o in cars:
-          cars.append(o)
-          lives -= 1
-          print("lives", lives)
-    for l in lane2.objects:
-      l.forward(-7)
-      if l.xcor() < -200:
-        l.ht()
-        del l
+    lane1.update()
+    lane2.update()
     if checkAABBCollision2(coin, player):
       score += 1
       coin.clear()
