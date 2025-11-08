@@ -89,6 +89,7 @@ class storage:
     self.coins = []
     self.x = x
     self.y = y
+    self.speed = 7
     self.cars = []
   def update(self):
     for o in self.objects:
@@ -98,15 +99,21 @@ class storage:
             global lives
             lives -= 1
             print("lives", lives)
-        o.forward(7)
-        if o.xcor() > 200:
-          o.ht()
-          del o
+        o.forward(self.speed)
+        if self.speed == 7:
+          if o.xcor() > 200:
+             o.ht()
+             del o
+        if self.speed == -7:
+          if o.xcor() < -200:
+             o.ht()
+             del o
 
 lane1 = storage(-300, 150)
 lane1.objects.append(car)
 lane2 = storage(200, -50)
 lane2.objects.append(car)
+lane2.speed = -7
 
 def  reset():
   global player, bg, has_drawn_text
@@ -161,6 +168,7 @@ def game():
   while True:
     lane1.update()
     lane2.update()
+    print(lane2.objects)
     if checkAABBCollision2(coin, player):
       score += 1
       coin.clear()
